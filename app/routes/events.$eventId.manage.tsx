@@ -12,6 +12,12 @@ import { Role } from "@prisma/client";
 import { db } from "~/utils/db.server";
 import { leaveEvent } from "~/actions/event";
 import { requireUserId } from "~/utils/session.server";
+import {
+  validateEventName,
+  validateEventDescription,
+  validateEventDate,
+  validateEventCode,
+} from "~/utils/validators";
 import { useEventContext } from "~/context/event";
 import {
   TextInput,
@@ -20,12 +26,6 @@ import {
   SelectOption,
 } from "~/components/input";
 import { badRequest } from "~/utils/request";
-import {
-  validateEventName,
-  validateEventDate,
-  validateEventCode,
-  validateEventDescription,
-} from "./events.new";
 import { confirmSubmit } from "~/utils/confirm";
 import { formatDatetimeLocalString } from "~/utils/time";
 import { useDateSubmit } from "~/hooks/date";

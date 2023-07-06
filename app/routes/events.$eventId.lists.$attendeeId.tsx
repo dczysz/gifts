@@ -17,13 +17,15 @@ import {
   deleteListItem,
   dontGiveListItem,
   giveListItem,
-  validateItemLink,
-  validateItemName,
-  validateItemQuantity,
-  validateItemDescription,
 } from "~/actions/list";
 import { db } from "~/utils/db.server";
 import { requireUserId } from "~/utils/session.server";
+import {
+  validateItemName,
+  validateItemDescription,
+  validateItemLink,
+  validateItemQuantity,
+} from "~/utils/validators";
 import {
   deleteComment,
   submitComment,
