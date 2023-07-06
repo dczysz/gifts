@@ -3,7 +3,9 @@ import { hashPassword } from "~/utils/session.server";
 const db = new PrismaClient();
 
 async function seed() {
-  await db.user.deleteMany();
+  try {
+    await db.user.deleteMany();
+  } catch {}
 
   const user = await db.user.create({
     data: {
