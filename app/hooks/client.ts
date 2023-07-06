@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export function useClientOnly<T extends any>(value: () => T, initialValue?: T) {
+export function useClientOnly<T>(value: () => T, initialValue?: T) {
   const [state, setState] = useState(initialValue);
 
   useEffect(() => {
