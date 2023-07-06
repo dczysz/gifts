@@ -1,0 +1,11 @@
+.event {
+  display: block;
+  overflow: unset;
+  max-height: 70vh;
+}
+
+.event-details {
+  border: none;
+  overflow: unset;
+  max-height: none;
+}

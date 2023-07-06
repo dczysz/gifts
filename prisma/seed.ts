@@ -1,53 +1,67 @@
-import { PrismaClient } from "@prisma/client";
-import bcrypt from "bcryptjs";
-
-const prisma = new PrismaClient();
+import { PrismaClient, Role } from "@prisma/client";
+import { hashPassword } from "~/utils/session.server";
+const db = new PrismaClient();
 
 async function seed() {
-  const email = "rachel@remix.run";
+  await db.user.deleteMany();
 
-  // cleanup the existing database
-  await prisma.user.delete({ where: { email } }).catch(() => {
-    // no worries if it doesn't exist yet
+  const user = await db.user.create({
+    data: {
+      username: "user",
+      passwordHash: await hashPassword("password"),
+    },
   });
 
-  const hashedPassword = await bcrypt.hash("racheliscool", 10);
-
-  const user = await prisma.user.create({
+  const event = await db.event.create({
     data: {
-      email,
-      password: {
+      name: "Christmas 2023",
+      description: "Christmas at Grandma's house.",
+      date: new Date("2023-12-25T12:30"),
+      location: "707 Chelsea Ct.",
+      code: "code",
+      creatorId: user.id,
+      attendees: {
+        create: { userId: user.id, nickname: "User 1", role: Role.Admin },
+      },
+    },
+    include: { attendees: true },
+  });
+
+  await db.listItem.create({
+    data: {
+      eventId: event.id,
+      ownerId: event.attendees[0].id,
+      name: "Hotwheels",
+      description: "This cool car",
+      quantity: 1,
+    },
+  });
+
+  await db.event.update({
+    where: { id: event.id },
+    data: {
+      attendees: {
         create: {
-          hash: hashedPassword,
+          nickname: "User 2",
+          role: Role.Guest,
+          user: {
+            create: {
+              username: "user2",
+              passwordHash: await hashPassword("password"),
+            },
+          },
         },
       },
     },
   });
 
-  await prisma.note.create({
+  await db.comment.create({
     data: {
-      title: "My first note",
-      body: "Hello, world!",
-      userId: user.id,
+      eventId: event.id,
+      ownerId: event.attendees[0].id,
+      text: "Test top level event comment",
     },
   });
-
-  await prisma.note.create({
-    data: {
-      title: "My second note",
-      body: "Hello, world!",
-      userId: user.id,
-    },
-  });
-
-  console.log(`Database has been seeded. 🌱`);
 }
 
-seed()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+seed();

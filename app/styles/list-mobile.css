@@ -1,0 +1,10 @@
+.item-list {
+  overflow-y: unset;
+  max-height: unset;
+}
+
+.list-discussion {
+  overflow: unset;
+  height: unset;
+  max-height: 70vh;
+}

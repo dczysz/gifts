@@ -1,42 +1,89 @@
-import { cssBundleHref } from "@remix-run/css-bundle";
-import type { LinksFunction, LoaderArgs } from "@remix-run/node";
-import { json } from "@remix-run/node";
+import type { PropsWithChildren } from "react";
+import type { LinksFunction } from "@remix-run/node";
+import type { V2_MetaFunction } from "@remix-run/react";
 import {
   Links,
   LiveReload,
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration,
+  useRouteError,
 } from "@remix-run/react";
 
-import { getUser } from "~/session.server";
-import stylesheet from "~/tailwind.css";
+import globalStylesUrl from "./styles/global.css";
+import globalMediumStylesUrl from "./styles/global-medium.css";
+import globalLargeStylesUrl from "./styles/global-large.css";
 
-export const links: LinksFunction = () => [
-  { rel: "stylesheet", href: stylesheet },
-  ...(cssBundleHref ? [{ rel: "stylesheet", href: cssBundleHref }] : []),
-];
-
-export const loader = async ({ request }: LoaderArgs) => {
-  return json({ user: await getUser(request) });
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: "stylesheet",
+      href: globalStylesUrl,
+    },
+    {
+      rel: "stylesheet",
+      href: globalMediumStylesUrl,
+      media: "print, (min-width: 640px)",
+    },
+    {
+      rel: "stylesheet",
+      href: globalLargeStylesUrl,
+      media: "screen and (min-width: 1024px)",
+    },
+  ];
 };
 
-export default function App() {
+export const meta: V2_MetaFunction = () => {
+  return [
+    { title: "Gifts!" },
+    { name: "description", content: "Gift lists made easy" },
+  ];
+};
+
+function Document({ children, title }: PropsWithChildren<{ title?: string }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <Meta />
+        {title ? <title>{title}</title> : null}
         <Links />
       </head>
-      <body className="h-full">
-        <Outlet />
-        <ScrollRestoration />
+      <body>
+        {children}
         <Scripts />
         <LiveReload />
       </body>
     </html>
+  );
+}
+
+export default function App() {
+  return (
+    <Document>
+      <Outlet />
+    </Document>
+  );
+}
+
+export function ErrorBoundary() {
+  const error = useRouteError();
+
+  let errorMessage = "An unknown error occurred";
+
+  if (error instanceof Error) {
+    errorMessage = error.message;
+  }
+
+  console.error("root.tsx ErrorBoundary:", error);
+
+  return (
+    <Document title="Uh-oh!">
+      <div className="error-container">
+        <h1>App Error</h1>
+        <p>{errorMessage}</p>
+      </div>
+    </Document>
   );
 }

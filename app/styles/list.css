@@ -1,0 +1,97 @@
+.list-discussion {
+  border-top: 1px solid var(--color-border);
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+  height: 50%;
+}
+
+.list-discussion h3 {
+  padding: 1rem;
+  margin: 0;
+  box-shadow: var(--box-shadow-xs);
+  z-index: 1;
+}
+
+.list-page {
+  display: flex;
+  flex-direction: column;
+  padding-top: 1rem;
+  overflow-y: auto;
+  background-color: var(--color-background);
+  position: relative;
+}
+
+.list-page > *:not(.list-discussion) {
+  padding: 0 1rem;
+}
+
+.list-page .comment-input {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.list-page .comment {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.item-list {
+  padding: 0 1rem;
+  overflow-y: auto;
+  max-height: 40%;
+}
+
+.item-list.full-height {
+  max-height: none;
+}
+
+.list-item {
+  padding: 1rem;
+  list-style-type: none;
+  margin: 1rem 1px;
+  border-radius: 8px;
+  box-shadow: var(--box-shadow-small);
+  background-color: var(--color-background-light);
+}
+
+.list-item.loading {
+  opacity: 0.5;
+}
+
+.list-item .item-label {
+  display: inline-block;
+  font-weight: bold;
+}
+
+.list-item button {
+  font-size: 0.9rem;
+}
+
+.list-item .item-description {
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.giver-list {
+  display: flex;
+  gap: 0.25rem;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.giver-avatar {
+  border-radius: 50%;
+  height: 34px;
+  width: 34px;
+  border: 2px solid var(--color-links);
+}
+
+.giver-avatar:not(:first-child) {
+  margin-left: -15px;
+}

@@ -1,5 +1,7 @@
 import { faker } from "@faker-js/faker";
 
+import { formatDatetimeLocalString } from "~/utils/time";
+
 describe("smoke tests", () => {
   afterEach(() => {
     cy.cleanupUser();
@@ -7,42 +9,58 @@ describe("smoke tests", () => {
 
   it("should allow you to register and login", () => {
     const loginForm = {
-      email: `${faker.internet.userName()}@example.com`,
+      username: `${faker.internet.userName({ lastName: "x" })}`,
       password: faker.internet.password(),
     };
-    cy.then(() => ({ email: loginForm.email })).as("user");
+    cy.then(() => ({ username: loginForm.username })).as("user");
 
     cy.visitAndCheck("/");
-    cy.findByRole("link", { name: /sign up/i }).click();
+    cy.findByRole("link", { name: /events/i }).click();
 
-    cy.findByRole("textbox", { name: /email/i }).type(loginForm.email);
+    cy.findByRole("textbox", { name: /username/i }).type(loginForm.username);
     cy.findByLabelText(/password/i).type(loginForm.password);
-    cy.findByRole("button", { name: /create account/i }).click();
+    cy.findByLabelText(/register/i).click();
+    cy.findByRole("button", { name: /submit/i }).click();
 
-    cy.findByRole("link", { name: /notes/i }).click();
     cy.findByRole("button", { name: /logout/i }).click();
-    cy.findByRole("link", { name: /log in/i });
+    cy.findByLabelText(/login/i);
   });
 
-  it("should allow you to make a note", () => {
-    const testNote = {
-      title: faker.lorem.words(1),
-      body: faker.lorem.sentences(1),
+  it("should allow you to create an event", () => {
+    const now = new Date();
+
+    const testEvent = {
+      name: faker.lorem.words(3),
+      date: formatDatetimeLocalString(
+        new Date(now.getFullYear() + 1, now.getMonth(), now.getDate(), 16)
+      ),
+      location: faker.location.streetAddress(),
+      code: faker.lorem.words(1),
     };
+
     cy.login();
     cy.visitAndCheck("/");
 
-    cy.findByRole("link", { name: /notes/i }).click();
-    cy.findByText("No notes yet");
+    cy.findByRole("link", { name: /view events/i }).click();
+    cy.findByText("No events");
 
-    cy.findByRole("link", { name: /\+ new note/i }).click();
+    cy.findAllByRole("link", { name: /create an event/i })
+      .first()
+      .click();
 
-    cy.findByRole("textbox", { name: /title/i }).type(testNote.title);
-    cy.findByRole("textbox", { name: /body/i }).type(testNote.body);
-    cy.findByRole("button", { name: /save/i }).click();
+    cy.findByRole("textbox", { name: /name/i }).type(testEvent.name);
+    cy.get("#date-input").type(testEvent.date); // findByRole not working
+    cy.findByRole("textbox", { name: /location/i }).type(testEvent.location);
+    cy.findByRole("textbox", { name: /code/i }).type(testEvent.code);
+    cy.findByRole("button", { name: /create/i }).click();
 
-    cy.findByRole("button", { name: /delete/i }).click();
+    cy.findByRole("button", { name: /delete event/i }); // .click();
 
-    cy.findByText("No notes yet");
+    // // https://applitools.com/event/cypress-alerts/
+    // cy.on("window:confirm", (txt) => {
+    //   //Mocha assertions
+    //   expect(txt).to.contains("Are you sure you want to delete this event?");
+    //   // return true;
+    // });
   });
 });

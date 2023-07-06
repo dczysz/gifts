@@ -1,174 +1,214 @@
-import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
-import { json, redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
-import { useEffect, useRef } from "react";
+import type {
+  ActionFunction,
+  LinksFunction,
+  LoaderFunction,
+  V2_MetaFunction,
+} from "@remix-run/node";
+import { redirect, json } from "@remix-run/node";
+import { useActionData, Link, useSearchParams, Form } from "@remix-run/react";
 
-import { verifyLogin } from "~/models/user.server";
-import { createUserSession, getUserId } from "~/session.server";
-import { safeRedirect, validateEmail } from "~/utils";
+import { db } from "~/utils/db.server";
+import stylesUrl from "~/styles/login.css";
+import {
+  createUserSession,
+  getUser,
+  login,
+  register,
+} from "~/utils/session.server";
+import {
+  validateRedirectUrl,
+  validateUsername,
+  validatePassword,
+} from "~/utils/validators";
+import { TextInput } from "~/components/input";
 
-export const loader = async ({ request }: LoaderArgs) => {
-  const userId = await getUserId(request);
-  if (userId) return redirect("/");
-  return json({});
+export const links: LinksFunction = () => {
+  return [{ rel: "stylesheet", href: stylesUrl }];
 };
 
-export const action = async ({ request }: ActionArgs) => {
-  const formData = await request.formData();
-  const email = formData.get("email");
-  const password = formData.get("password");
-  const redirectTo = safeRedirect(formData.get("redirectTo"), "/");
-  const remember = formData.get("remember");
-
-  if (!validateEmail(email)) {
-    return json(
-      { errors: { email: "Email is invalid", password: null } },
-      { status: 400 }
-    );
-  }
-
-  if (typeof password !== "string" || password.length === 0) {
-    return json(
-      { errors: { email: null, password: "Password is required" } },
-      { status: 400 }
-    );
-  }
-
-  if (password.length < 8) {
-    return json(
-      { errors: { email: null, password: "Password is too short" } },
-      { status: 400 }
-    );
-  }
-
-  const user = await verifyLogin(email, password);
-
-  if (!user) {
-    return json(
-      { errors: { email: "Invalid email or password", password: null } },
-      { status: 400 }
-    );
-  }
-
-  return createUserSession({
-    redirectTo,
-    remember: remember === "on" ? true : false,
-    request,
-    userId: user.id,
-  });
+export const meta: V2_MetaFunction = () => {
+  return [
+    {
+      title: "Gifts! | Login",
+    },
+    {
+      name: "description",
+      content: "Login to manage your gift giving events!",
+    },
+  ];
 };
 
-export const meta: V2_MetaFunction = () => [{ title: "Login" }];
+export const loader: LoaderFunction = async ({ request }) => {
+  const isLoggedIn = await getUser(request);
 
-export default function LoginPage() {
-  const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/notes";
-  const actionData = useActionData<typeof action>();
-  const emailRef = useRef<HTMLInputElement>(null);
-  const passwordRef = useRef<HTMLInputElement>(null);
+  if (isLoggedIn) {
+    return redirect("/events");
+  }
 
-  useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
+  return null;
+};
+
+type ActionData = {
+  formError?: string;
+  fieldErrors?: {
+    username: string | undefined;
+    password: string | undefined;
+  };
+  fields?: {
+    loginType: string;
+    username: string;
+    password: string;
+  };
+};
+
+const badRequest = (data: ActionData) => json(data, { status: 400 });
+
+export const action: ActionFunction = async ({ request }) => {
+  const form = await request.formData();
+  const loginType = form.get("loginType");
+  const username = form.get("username");
+  const password = form.get("password");
+  const redirectTo = validateRedirectUrl(form.get("redirectTo") || "/events");
+
+  if (
+    typeof loginType !== "string" ||
+    typeof username !== "string" ||
+    typeof password !== "string" ||
+    typeof redirectTo !== "string"
+  ) {
+    return badRequest({
+      formError: `Form not submitted correctly.`,
+    });
+  }
+
+  const fields = { loginType, username, password };
+  const fieldErrors = {
+    username: validateUsername(username),
+    password: validatePassword(password),
+  };
+
+  if (Object.values(fieldErrors).some(Boolean)) {
+    return badRequest({ fieldErrors, fields });
+  }
+
+  switch (loginType) {
+    case "login": {
+      const user = await login({ username, password });
+
+      if (!user) {
+        return badRequest({
+          fields,
+          formError: "Incorrect username or password",
+        });
+      }
+
+      return createUserSession(user.id, redirectTo);
     }
-  }, [actionData]);
+    case "register": {
+      const userExists = await db.user.findFirst({
+        where: { username },
+      });
+      if (userExists) {
+        return badRequest({
+          fields,
+          formError: `User with username ${username} already exists`,
+        });
+      }
+
+      const user = await register({ username, password });
+      if (!user) {
+        return badRequest({
+          fields,
+          formError: "Something went wrong creating a new user",
+        });
+      }
+
+      return createUserSession(user.id, redirectTo);
+    }
+    default: {
+      return badRequest({
+        fields,
+        formError: "Login type invalid",
+      });
+    }
+  }
+};
+
+export default function Login() {
+  const actionData = useActionData<ActionData>();
+  const [searchParams] = useSearchParams();
 
   return (
-    <div className="flex min-h-full flex-col justify-center">
-      <div className="mx-auto w-full max-w-md px-8">
-        <Form method="post" className="space-y-6">
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email address
-            </label>
-            <div className="mt-1">
+    <div className="container">
+      <div className="content">
+        <h1>Login</h1>
+        <Form method="post">
+          <input
+            type="hidden"
+            name="redirectTo"
+            value={searchParams.get("redirectTo") ?? undefined}
+          />
+
+          <fieldset>
+            <legend className="sr-only">Login or Register?</legend>
+            <label>
               <input
-                ref={emailRef}
-                id="email"
-                required
-                autoFocus={true}
-                name="email"
-                type="email"
-                autoComplete="email"
-                aria-invalid={actionData?.errors?.email ? true : undefined}
-                aria-describedby="email-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.email ? (
-                <div className="pt-1 text-red-700" id="email-error">
-                  {actionData.errors.email}
-                </div>
-              ) : null}
-            </div>
+                type="radio"
+                name="loginType"
+                value="login"
+                defaultChecked={
+                  !actionData?.fields?.loginType ||
+                  actionData?.fields?.loginType === "login"
+                }
+              />{" "}
+              Login
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="loginType"
+                value="register"
+                defaultChecked={actionData?.fields?.loginType === "register"}
+              />{" "}
+              Register
+            </label>
+          </fieldset>
+
+          <TextInput
+            label="Username"
+            name="username"
+            defaultValue={actionData?.fields?.username}
+            error={actionData?.fieldErrors?.username}
+          />
+
+          <TextInput
+            label="Password"
+            name="password"
+            defaultValue={actionData?.fields?.password}
+            error={actionData?.fieldErrors?.password}
+            type="password"
+          />
+
+          <div id="form-error-message">
+            {actionData?.formError ? (
+              <p className="form-validation-error" role="alert">
+                {actionData.formError}
+              </p>
+            ) : null}
           </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-            <div className="mt-1">
-              <input
-                id="password"
-                ref={passwordRef}
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                aria-invalid={actionData?.errors?.password ? true : undefined}
-                aria-describedby="password-error"
-                className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
-              />
-              {actionData?.errors?.password ? (
-                <div className="pt-1 text-red-700" id="password-error">
-                  {actionData.errors.password}
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          <input type="hidden" name="redirectTo" value={redirectTo} />
-          <button
-            type="submit"
-            className="w-full rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 focus:bg-blue-400"
-          >
-            Log in
+          <button type="submit" className="button">
+            Submit
           </button>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember"
-                name="remember"
-                type="checkbox"
-                className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-              />
-              <label
-                htmlFor="remember"
-                className="ml-2 block text-sm text-gray-900"
-              >
-                Remember me
-              </label>
-            </div>
-            <div className="text-center text-sm text-gray-500">
-              Don't have an account?{" "}
-              <Link
-                className="text-blue-500 underline"
-                to={{
-                  pathname: "/join",
-                  search: searchParams.toString(),
-                }}
-              >
-                Sign up
-              </Link>
-            </div>
-          </div>
         </Form>
+      </div>
+
+      <div className="links">
+        <ul>
+          <li>
+            <Link to="/">Home</Link>
+          </li>
+        </ul>
       </div>
     </div>
   );
