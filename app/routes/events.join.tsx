@@ -67,6 +67,7 @@ export default function JoinEventPage() {
           error={actionData?.message}
           placeholder="abc-123"
           autoCapitalize="off"
+          autoComplete="off"
           disabled={navigation.state === "submitting"}
         />
         <button className="button" disabled={navigation.state === "submitting"}>
