@@ -24,7 +24,7 @@ function InputWrapper({
     <div className="input-wrapper" style={containerStyles}>
       <label htmlFor={id}>
         {label}
-        {required ? <span> *</span> : null}
+        {required ? <span>&nbsp;*</span> : null}
       </label>
       {children}
       {error ? (
@@ -47,6 +47,7 @@ interface TextInputProps extends Omit<InputProps, "id"> {
   id?: string;
   placeholder?: string;
   autoCapitalize?: string;
+  autoComplete?: string;
 }
 
 export function TextInput({
@@ -59,6 +60,7 @@ export function TextInput({
   required,
   disabled,
   autoCapitalize,
+  autoComplete,
   ...props
 }: TextInputProps) {
   return (
@@ -80,6 +82,7 @@ export function TextInput({
         required={required}
         disabled={disabled}
         autoCapitalize={autoCapitalize}
+        autoComplete={autoComplete}
       />
     </InputWrapper>
   );

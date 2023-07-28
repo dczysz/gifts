@@ -97,8 +97,8 @@ export function validateUsername(username: string) {
 }
 
 export function validatePassword(password: string) {
-  if (typeof password !== "string" || password.length < 6) {
-    return `Password must be at least 6 characters long`;
+  if (typeof password !== "string" || password.length < 8) {
+    return `Password must be at least 8 characters long`;
   }
 }
 

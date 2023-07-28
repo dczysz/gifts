@@ -125,12 +125,15 @@ export default function EventsRoute() {
 
             {data.user ? (
               <div className="user-info">
-                <span>{`Hi, ${data.user.username}`}</span>
-                <Form action="/logout" method="post">
-                  <button type="submit" className="button">
-                    Logout
-                  </button>
-                </Form>
+                <div className="top">
+                  <span>{`Hi, ${data.user.username}`}</span>
+                  <Form action="/logout" method="post">
+                    <button type="submit" className="button">
+                      Logout
+                    </button>
+                  </Form>
+                </div>
+                <Link to="/events/account">Account Settings</Link>
               </div>
             ) : (
               <Link to="/login">Login</Link>

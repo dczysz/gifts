@@ -59,13 +59,17 @@ main {
 .user-info {
   border-bottom: 1px solid var(--color-border);
   padding: 1rem;
+}
+
+.user-info .top {
   display: flex;
   gap: 0.5rem;
   justify-content: space-between;
   align-items: center;
+  padding-bottom: 0.5rem;
 }
 
-.user-info > span {
+.user-info .top > span {
   overflow-x: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -82,6 +86,7 @@ main {
 
 .events-list {
   padding: 1rem;
+  padding-top: 0;
 }
 
 .events-list ul {
@@ -186,4 +191,20 @@ main {
   display: grid;
   place-items: center;
   height: 100%;
+}
+
+.account-settings {
+  padding: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.account-settings h1 {
+  text-align: center;
+}
+
+.account-settings form {
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
 }
