@@ -68,9 +68,33 @@ interface CommentInputProps {
 }
 
 function CommentInput({ listOwnerId, fetcherDataChanged }: CommentInputProps) {
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<{ error?: string }>();
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const [showError, setShowError] = useState(false);
+
+  useEffect(() => {
+    if (fetcher.state === "idle") {
+      formRef.current?.reset();
+    }
+
+    fetcherDataChanged(fetcher.state, fetcher.formData);
+  }, [fetcher, fetcherDataChanged]);
+
+  // When fetcher error is received, show it briefly
+  useEffect(() => {
+    setShowError(!!fetcher.data?.error);
+
+    if (!fetcher.data?.error) return;
+
+    const timeout = setTimeout(() => {
+      setShowError(false);
+    }, 5000);
+
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [fetcher.data]);
 
   const handleCtrlEnter = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && (e.shiftKey || e.ctrlKey)) {
@@ -82,18 +106,10 @@ function CommentInput({ listOwnerId, fetcherDataChanged }: CommentInputProps) {
     }
   };
 
-  useEffect(() => {
-    if (fetcher.state === "idle") {
-      formRef.current?.reset();
-    }
-
-    fetcherDataChanged(fetcher.state, fetcher.formData);
-  }, [fetcher, fetcherDataChanged]);
-
   return (
     <div className="comment-input">
       <fetcher.Form method="post" ref={formRef}>
-        <div>
+        <div className="comment-form">
           <input type="hidden" name="_action" value="comment" />
           {listOwnerId ? (
             <input type="hidden" name="listOwnerId" value={listOwnerId} />
@@ -119,6 +135,10 @@ function CommentInput({ listOwnerId, fetcherDataChanged }: CommentInputProps) {
           </button>
         </div>
       </fetcher.Form>
+
+      <div className={`comment-error ${showError ? "show" : ""}`}>
+        {fetcher.data?.error}{" "}
+      </div>
     </div>
   );
 }

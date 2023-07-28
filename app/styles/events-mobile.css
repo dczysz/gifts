@@ -60,6 +60,7 @@ body.sidebar-open .sidebar-overlay {
 main {
   max-height: unset;
   min-height: calc(100vh - var(--header-height));
+  height: unset;
   max-width: 100vw;
 }
 

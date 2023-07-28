@@ -181,16 +181,37 @@
 }
 
 .comment-input {
+  position: relative;
   padding: 1rem 0;
   box-shadow: var(--box-shadow-xs-top);
 }
 
-.comment-input div {
+.comment-error {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: var(--color-invalid);
+  top: 0;
+  transform: translateY(-100%);
+  text-align: center;
+  padding: 0.25rem 0.5rem;
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+  transition: opacity 200ms;
+}
+
+.comment-error:not(.show) {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 500ms;
+}
+
+.comment-form {
   display: flex;
   gap: 0.5rem;
 }
 
-.comment-input textarea {
+.comment-form textarea {
   background-color: var(--color-background-light);
 }
 
@@ -213,7 +234,6 @@
   padding: 1rem;
   margin: 0;
   box-shadow: var(--box-shadow-xs);
-  z-index: 1;
 }
 
 .event-actions {

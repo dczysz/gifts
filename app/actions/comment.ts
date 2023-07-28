@@ -1,6 +1,8 @@
 import type { Params } from "@remix-run/react";
 
+import { MAX_COMMENT_COUNT } from "~/config/comment";
 import { db } from "~/utils/db.server";
+import { badRequest } from "~/utils/request";
 import { requireUserId } from "~/utils/session.server";
 
 export async function submitComment(request: Request, params: Params) {
@@ -20,9 +22,7 @@ export async function submitComment(request: Request, params: Params) {
   }
 
   if (!text.length) {
-    throw new Response("Please enter a comment", {
-      status: 400,
-    });
+    return badRequest({ error: "Please enter a comment" });
   }
 
   const attendee = await db.attendee.findFirst({ where: { userId, eventId } });
@@ -30,6 +30,19 @@ export async function submitComment(request: Request, params: Params) {
   if (!attendee) {
     throw new Response("You must be attending this event to leave a comment", {
       status: 400,
+    });
+  }
+
+  const numComments = await db.comment.count({
+    where: {
+      eventId,
+      listOwnerId: listOwnerId || null,
+    },
+  });
+
+  if (numComments >= MAX_COMMENT_COUNT) {
+    return badRequest({
+      error: `Comment limit of ${MAX_COMMENT_COUNT} reached for this discussion`,
     });
   }
 
