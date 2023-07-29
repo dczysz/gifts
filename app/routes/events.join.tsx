@@ -1,4 +1,4 @@
-import type { ActionArgs, LoaderArgs } from "@remix-run/node";
+import type { ActionArgs, LoaderArgs, V2_MetaFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 
@@ -7,6 +7,13 @@ import { joinEvent } from "~/actions/event";
 import { badRequest } from "~/utils/request";
 import { getUser, requireUserId } from "~/utils/session.server";
 import { TextInput } from "~/components/input";
+
+export const meta: V2_MetaFunction = () => [
+  {
+    title: "Join Event | Simple Wish",
+  },
+  { name: "description", content: "Join an existing event" },
+];
 
 export const loader = async ({ request }: LoaderArgs) => {
   await requireUserId(request);

@@ -1,3 +1,4 @@
+import type { V2_MetaFunction } from "@remix-run/react";
 import { type ActionArgs, json } from "@remix-run/server-runtime";
 import { Form, useActionData, useNavigation } from "@remix-run/react";
 import { useEffect, useRef } from "react";
@@ -8,6 +9,13 @@ import { badRequest } from "~/utils/request";
 import { validatePassword } from "~/utils/validators";
 import { hashPassword, requireUserId } from "~/utils/session.server";
 import { TextInput } from "~/components/input";
+
+export const meta: V2_MetaFunction = () => [
+  {
+    title: "Account | Simple Wish",
+  },
+  { name: "description", content: "Manage your account details" },
+];
 
 export const action = async ({ request }: ActionArgs) => {
   const userId = await requireUserId(request);

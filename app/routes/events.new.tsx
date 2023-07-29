@@ -1,4 +1,8 @@
-import type { ActionFunction, LoaderFunction } from "@remix-run/node";
+import type {
+  ActionFunction,
+  LoaderFunction,
+  V2_MetaFunction,
+} from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import {
   Form,
@@ -18,6 +22,13 @@ import { db } from "~/utils/db.server";
 import { getUser, getUserId, requireUserId } from "~/utils/session.server";
 import { useDateSubmit } from "~/hooks/date";
 import { TextAreaInput, TextInput } from "~/components/input";
+
+export const meta: V2_MetaFunction = () => [
+  {
+    title: "New Event | Simple Wish",
+  },
+  { name: "description", content: "Create a new event" },
+];
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);

@@ -55,7 +55,7 @@ export const meta: V2_MetaFunction = ({
   }
 
   return [
-    { title: data.event.name },
+    { title: `${data.event.name} | Simple Wish` },
     { name: "description", content: `Enjoy ${data.event.name}!` },
   ];
 };

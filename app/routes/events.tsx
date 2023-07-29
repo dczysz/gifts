@@ -36,7 +36,7 @@ export const links: LinksFunction = () => {
 };
 
 export const meta: V2_MetaFunction = () => [
-  { title: "Events" },
+  { title: "Events | Simple Wish" },
   { name: "description", content: "View your events" },
 ];
 

@@ -29,11 +29,11 @@ export const links: LinksFunction = () => {
 export const meta: V2_MetaFunction = () => {
   return [
     {
-      title: "Gifts! | Login",
+      title: "Login | Simple Wish",
     },
     {
       name: "description",
-      content: "Login to manage your gift giving events!",
+      content: "Login to view your events",
     },
   ];
 };
