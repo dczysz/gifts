@@ -1,75 +1,79 @@
-/*
- * when the user visits this page, this style will apply, when they leave, it
- * will get unloaded, so don't worry so much about conflicting styles between
- * pages!
- */
-
- body {
-  background-image: var(--gradient-background);
-}
-
-.container {
-  min-height: inherit;
-}
-
-.container,
-.content {
+nav {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
   align-items: center;
+  background-color: var(--color-links-hover);
+  color: var(--color-background);
+  border-bottom: 1px solid var(--color-links-hover);
 }
 
-.content {
-  padding-top: 3rem;
-  padding-bottom: 3rem;
-}
-
-h1 {
+nav h1 {
   margin: 0;
-  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.75);
+  font-size: 1.75rem;
+}
+
+nav a {
+  color: inherit;
+  font-weight: bold;
+  border: 1px solid var(--color-background);
+  padding: 0.5rem 0.75rem;
+  border-radius: 4px;
+}
+
+nav a:hover {
+  color: var(--color-foreground);
+  border-color: var(--color-foreground);
+  text-decoration: none;
+}
+
+header {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
   text-align: center;
-  line-height: 0.5;
+  padding: 5rem 1rem 3rem 1rem;
 }
 
-h1 span {
-  display: block;
-  font-size: 4.5rem;
-  line-height: 1;
-  text-transform: uppercase;
-  text-shadow: 0 0.2em 0.5em rgba(0, 0, 0, 0.5), 0 5px 0
-      rgba(0, 0, 0, 0.75);
+header h2 {
+  font-size: 5rem;
+  line-height: 0.9;
 }
 
-nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+header p {
+  font-size: 1.5rem;
+  margin: 2rem 0 3rem 0;
+}
+
+header a.button {
+  font-size: 1.4rem;
+}
+
+.row {
+  margin: 4rem auto;
+  padding: 1rem 3rem;
+  max-width: 1200px;
   display: flex;
-  gap: 1rem;
-  font-family: var(--font-display);
-  font-size: 1.125rem;
-  line-height: 1;
+  align-items: center;
+  gap: 2rem;
+  font-size: 1.1rem;
 }
 
-nav ul a:hover {
-  text-decoration-style: wavy;
-  text-decoration-thickness: 1px;
+.row:nth-of-type(even) {
+  flex-direction: row-reverse;
 }
 
-@media print, (min-width: 640px) {
-  h1 span {
-    font-size: 6rem;
-  }
-
-  nav ul {
-    font-size: 1.25rem;
-    gap: 1.5rem;
-  }
+.row svg {
+  flex-shrink: 0;
+  max-width: 100%;
 }
 
-@media screen and (min-width: 1024px) {
-  h1 span {
-    font-size: 8rem;
-  }
+footer {
+  background-color: var(--color-links-hover);
+  color: var(--color-background);
+  display: grid;
+  place-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  margin-top: 3rem;
 }

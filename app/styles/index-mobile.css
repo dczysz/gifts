@@ -1,0 +1,19 @@
+nav {
+  padding: 0.5rem 1rem;
+}
+
+nav h1 {
+  font-size: 1.5rem;
+}
+
+header h2 {
+  font-size: 3rem;
+}
+
+header p {
+  font-size: 1.2rem;
+}
+
+.row {
+  flex-wrap: wrap;
+}
