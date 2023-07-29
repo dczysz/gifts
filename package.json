@@ -32,7 +32,7 @@
   ],
   "dependencies": {
     "@isaacs/express-prometheus-middleware": "^1.2.1",
-    "@prisma/client": "^4.16.2",
+    "@prisma/client": "^5.0.0",
     "@remix-run/css-bundle": "^1.18.0",
     "@remix-run/express": "^1.18.0",
     "@remix-run/node": "^1.18.0",
@@ -79,7 +79,7 @@
     "npm-run-all": "^4.1.5",
     "postcss": "^8.4.24",
     "prettier": "^2.8.8",
-    "prisma": "^4.16.2",
+    "prisma": "^5.0.0",
     "start-server-and-test": "^2.0.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",

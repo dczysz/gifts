@@ -6,5 +6,4 @@ mkswap /swapfile
 echo 10 >/proc/sys/vm/swappiness
 swapon /swapfile
 echo 1 >/proc/sys/vm/overcommit_memory
-# npx prisma migrate deploy
-npx prisma db push
+npx prisma migrate deploy
