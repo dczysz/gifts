@@ -97,11 +97,21 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     att.userId === userId ? -1 : 1
   );
 
+  let hostname =
+    request.headers.get("X-Forwarded-Host") || request.headers.get("Host");
+  hostname ||= "localhost:3000";
+  if (hostname === "localhost:3000") {
+    hostname = "http://" + hostname;
+  } else {
+    hostname = "https://" + hostname;
+  }
+
   const data = {
     userId,
     event,
     attendee,
     creatorAttendee,
+    hostname,
   };
 
   return json(data);
@@ -140,7 +150,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 export default function EventRoute() {
-  const { event, userId, attendee, creatorAttendee } =
+  const { event, userId, attendee, creatorAttendee, hostname } =
     useLoaderData<typeof loader>();
   const isEventCreator = userId === event.creatorId;
   const isEventManager =
@@ -237,7 +247,7 @@ export default function EventRoute() {
               ],
               [
                 "body",
-                `Open this link to join the event: http://localhost:3000/events/join?code=${event.code}`,
+                `Open this link to join the event: ${hostname}/events/join?code=${event.code}`,
               ],
             ])
               .toString()
