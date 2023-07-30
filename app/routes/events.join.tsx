@@ -73,7 +73,7 @@ export default function JoinEventPage() {
           name="code"
           error={actionData?.message}
           placeholder="abc-123"
-          autoCapitalize="off"
+          autoCapitalize="none"
           autoComplete="off"
           disabled={navigation.state === "submitting"}
         />

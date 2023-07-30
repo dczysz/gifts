@@ -21,7 +21,7 @@ export async function joinEvent(
   });
 
   if (event?.attendees.some((attendee) => attendee.userId === userId)) {
-    throw new Response("You have already joined that event", { status: 400 });
+    return;
   }
 
   await db.event.update({
