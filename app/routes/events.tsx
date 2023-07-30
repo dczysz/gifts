@@ -111,7 +111,7 @@ export default function EventsRoute() {
           <button onClick={() => setIsSidebarOpen(true)}>
             <MenuIcon />
           </button>
-          <h1>Gifts!</h1>
+          <h1>Simple Wish</h1>
         </header>
 
         <div className="events">

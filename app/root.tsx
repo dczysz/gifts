@@ -35,8 +35,8 @@ export const links: LinksFunction = () => {
 
 export const meta: V2_MetaFunction = () => {
   return [
-    { title: "Gifts!" },
-    { name: "description", content: "Gift lists made easy" },
+    { title: "Simple Wish" },
+    { name: "description", content: "Simple gifting, endless smiles" },
   ];
 };
 
