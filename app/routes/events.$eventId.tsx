@@ -30,6 +30,8 @@ import { useClientOnly } from "~/hooks/client";
 import { formatDateTime } from "~/utils/time";
 import stylesUrl from "~/styles/event.css";
 import mobileStylesUrl from "~/styles/event-mobile.css";
+import Avatar from "boring-avatars";
+import { avatarProps } from "~/config/avatar";
 
 export const links: LinksFunction = () => {
   return [
@@ -271,9 +273,17 @@ export default function EventRoute() {
                 to={`lists/${att.id}`}
                 className={({ isActive }) => (isActive ? "active" : "")}
               >
-                {att.id === attendee.id
-                  ? "Your list"
-                  : `${att.nickname}'s list`}
+                <Avatar
+                  size={30}
+                  name={att.avatar || att.userId}
+                  {...avatarProps}
+                />
+
+                <span>
+                  {att.id === attendee.id
+                    ? "Your list"
+                    : `${att.nickname}'s list`}
+                </span>
               </NavLink>
             </li>
           ))}

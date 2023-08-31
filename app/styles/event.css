@@ -270,10 +270,20 @@
 .attendee-list li a {
   border-radius: 4px;
   padding: 1rem;
-  display: block;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
   box-shadow: var(--box-shadow-small);
   background-color: var(--color-background-light);
   font-weight: bold;
+}
+
+.attendee-list li a svg {
+  border: 2px solid var(--color-links-hover);
+  border-radius: 50%;
+  background-color: var(--color-border);
+  flex-shrink: 0;
 }
 
 .attendee-list li a:hover,
