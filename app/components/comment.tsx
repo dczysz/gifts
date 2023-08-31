@@ -156,17 +156,34 @@ function CommentsDisplay({
   isEventCreator,
   sendingComment,
 }: CommentsDisplayProps) {
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({
-      top: scrollRef.current?.scrollHeight,
-      behavior: "smooth",
-    });
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const firstUnreadComment = container.querySelector(".comment.new");
+
+    if (firstUnreadComment) {
+      // If any unread comments exist, scroll to first one
+      container.scrollTo({
+        top:
+          container.scrollTop +
+          firstUnreadComment.getBoundingClientRect().top -
+          firstUnreadComment.clientHeight * 2,
+        behavior: "smooth",
+      });
+    } else {
+      // otherwise scroll to bottom to show most recent comments
+      scrollContainerRef.current?.scrollTo({
+        top: scrollContainerRef.current?.scrollHeight,
+        behavior: "smooth",
+      });
+    }
   }, [comments, sendingComment]);
 
   return (
-    <div ref={scrollRef} className="comments">
+    <div ref={scrollContainerRef} className="comments">
       {!comments.length && !sendingComment ? (
         <p className="no-comments">No messages to display</p>
       ) : null}
