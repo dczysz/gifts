@@ -99,21 +99,11 @@ export const loader = async ({ request, params }: LoaderArgs) => {
     att.userId === userId ? -1 : 1
   );
 
-  let hostname =
-    request.headers.get("X-Forwarded-Host") || request.headers.get("Host");
-  hostname ||= "localhost:3000";
-  if (hostname === "localhost:3000") {
-    hostname = "http://" + hostname;
-  } else {
-    hostname = "https://" + hostname;
-  }
-
   const data = {
     userId,
     event,
     attendee,
     creatorAttendee,
-    hostname,
   };
 
   return json(data);
@@ -152,7 +142,7 @@ export const action: ActionFunction = async ({ request, params }) => {
 };
 
 export default function EventRoute() {
-  const { event, userId, attendee, creatorAttendee, hostname } =
+  const { event, userId, attendee, creatorAttendee } =
     useLoaderData<typeof loader>();
   const isEventCreator = userId === event.creatorId;
   const isEventManager =
@@ -162,6 +152,18 @@ export default function EventRoute() {
     () => formatDateTime(new Date(event.date)),
     ""
   );
+
+  const copyInviteUrlToClipboard = async () => {
+    const url = `${location.origin}/events/join?code=${event.code}`;
+
+    try {
+      await navigator.clipboard.writeText(url);
+      alert("The invite URL has been copied to your clipboard!");
+    } catch (e) {
+      console.error(e);
+      alert("Copy this URL and send to a friend!\n" + url);
+    }
+  };
 
   let actionForm = (
     <>
@@ -240,25 +242,9 @@ export default function EventRoute() {
             Edit profile
           </Link>
 
-          <a
-            className="button"
-            href={`mailto:?${new URLSearchParams([
-              [
-                "subject",
-                `${attendee.nickname} has invited you to join their ${event.name} event`,
-              ],
-              [
-                "body",
-                `Open this link to join the event: ${hostname}/events/join?code=${event.code}`,
-              ],
-            ])
-              .toString()
-              .replace(/\+/g, "%20")}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <button className="button" onClick={copyInviteUrlToClipboard}>
             Invite a friend
-          </a>
+          </button>
 
           {actionForm}
         </div>
