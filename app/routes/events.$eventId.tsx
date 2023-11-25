@@ -246,6 +246,10 @@ export default function EventRoute() {
             Invite a friend
           </button>
 
+          <Link to="checklist" className="button">
+            Shopping List
+          </Link>
+
           {actionForm}
         </div>
 

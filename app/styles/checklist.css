@@ -1,0 +1,35 @@
+.checklist {
+  padding: 1rem;
+}
+
+.owner-list,
+.item-list {
+  padding: 0;
+  overflow-y: auto;
+  max-height: 40%;
+}
+
+.owner-list li {
+  margin: 1rem 0;
+}
+
+.list-item {
+  padding: 1rem;
+  list-style-type: none;
+  margin: 1rem 1px;
+  border-radius: 8px;
+  box-shadow: var(--box-shadow-small);
+  background-color: var(--color-background-light);
+}
+
+.item-label {
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.item-description {
+  font-size: 0.9rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
